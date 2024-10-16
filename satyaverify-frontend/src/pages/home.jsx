@@ -68,7 +68,7 @@ const Home = () => {
       </div>
 
       <footer className="footer">
-        <p>© 2024 SatyaVerify. All rights reserved.</p>
+        <p>Be Aware From Fake News!!</p>
       </footer>
     </div>
   );
