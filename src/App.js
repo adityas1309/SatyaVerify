@@ -20,7 +20,7 @@ const App = () => {
           {/* Landing page with Spline and Get Started button */}
           <Route path="/" element={<LandingPage />} />
           
-          <Route path="/choose" element={<Home />} />
+          <Route path="/home" element={<Home />} />
 
           {/* Redirect any unmatched routes to the homepage */}
           <Route path="*" element={<Navigate to="/" />} />
