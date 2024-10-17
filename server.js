@@ -10,8 +10,9 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-const mongoURI = process.env.MONGO_URI;  // Access Mongo URI from .env
-const newsApiKey = process.env.NEWS_API_KEY; // Access News API key from .env
+// MongoDB URI and News API key from .env
+const mongoURI = process.env.MONGO_URI;  
+const newsApiKey = process.env.NEWS_API_KEY; 
 
 // Connect to MongoDB
 mongoose.connect(mongoURI, {
@@ -20,6 +21,14 @@ mongoose.connect(mongoURI, {
 })
 .then(() => console.log("MongoDB connected successfully"))
 .catch((err) => console.error("MongoDB connection error:", err));
+
+// Define a Satisfaction Schema
+const satisfactionSchema = new mongoose.Schema({
+  response: { type: String, required: true }, // 'yes' or 'no'
+  createdAt: { type: Date, default: Date.now }
+});
+
+const Satisfaction = mongoose.model('Satisfaction', satisfactionSchema);
 
 // Trusted and blacklisted sources
 const trustedSources = [
@@ -69,14 +78,17 @@ const calculateCredibilityScore = (articles) => {
 // Route to verify news
 app.post('/api/verify', async (req, res) => {
   const { link } = req.body;
+  console.log("Verification request received:", link);
+  
 
   try {
     // Extract domain from the provided link
     const domain = new URL(link).hostname.replace('www.', '');
-
+    console.log("Domain being queried:", domain);
     // Search for articles from the News API using the domain
     const newsApiResponse = await axios.get(`https://newsapi.org/v2/everything?domains=${domain}&apiKey=${newsApiKey}`);
-    const articles = newsApiResponse.data.articles;
+    const articles = newsApiResponse.data.articles || [];
+    console.log("News API response:", newsApiResponse.data);
 
     // Calculate credibility score based on the articles found
     const { score, message } = calculateCredibilityScore(articles);
@@ -90,6 +102,37 @@ app.post('/api/verify', async (req, res) => {
   } catch (error) {
     console.error("Error verifying news link:", error);
     res.status(500).json({ error: "Server error while verifying news." });
+  }
+});
+
+// Route to handle user satisfaction response
+app.post('/api/satisfaction', async (req, res) => {
+  const { response } = req.body; // Expecting 'yes' or 'no'
+
+  if (response !== 'yes' && response !== 'no') {
+    return res.status(400).json({ error: "Response must be 'yes' or 'no'." });
+  }
+
+  try {
+    // Save the response to the database
+    const satisfaction = new Satisfaction({ response });
+    await satisfaction.save();
+
+    // Get the updated counts
+    const counts = await Satisfaction.aggregate([
+      { $group: { _id: "$response", count: { $sum: 1 } } },
+    ]);
+
+    // Format counts for easier access
+    const satisfactionCounts = counts.reduce((acc, curr) => {
+      acc[curr._id] = curr.count;
+      return acc;
+    }, { yes: 0, no: 0 });
+
+    res.json({ message: 'Response recorded', satisfactionCounts });
+  } catch (error) {
+    console.error("Error saving satisfaction response:", error);
+    res.status(500).json({ error: "Server error while recording response." });
   }
 });
 

@@ -6,6 +6,8 @@ const Home = () => {
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [satisfaction, setSatisfaction] = useState(null); // State for satisfaction response
+  const [counts, setCounts] = useState({ yes: 0, no: 0 }); // State for counts
 
   const handleSubmit = async () => {
     if (!link) {
@@ -15,6 +17,7 @@ const Home = () => {
     setLoading(true);
     setError('');
     setResult(null);
+    setSatisfaction(null); // Reset satisfaction state
 
     try {
       const response = await axios.post('http://localhost:5000/api/verify', { link });
@@ -26,8 +29,19 @@ const Home = () => {
     setLoading(false);
   };
 
+  const handleSatisfaction = async (response) => {
+    try {
+      const satisfactionResponse = await axios.post('http://localhost:5000/api/satisfaction', { response });
+      setCounts(satisfactionResponse.data.satisfactionCounts); // Update counts state
+      setSatisfaction(response); // Set satisfaction state
+    } catch (error) {
+      console.error("Error recording satisfaction response:", error);
+      setError('Failed to record satisfaction response.');
+    }
+  };
+
   return (
-    <div className="flex flex-col items-center bg-gradient-to-br flex flex-col h-screen w-screen justify-center from-gray-900 via-indigo-900 to-purple-900 text-white">
+    <div className="flex flex-col items-center bg-gradient-to-br h-screen w-screen justify-center from-gray-900 via-indigo-900 to-purple-900 text-white">
       <div className="glass-card bg-white bg-opacity-10 shadow-xl rounded-xl p-8 w-full max-w-lg backdrop-blur-md">
         <h1 className="text-3xl font-extrabold text-center mb-4 tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500">
           SatyaVerify
@@ -59,6 +73,23 @@ const Home = () => {
             <h2 className="text-xl font-semibold mb-2 text-blue-300">Verification Results</h2>
             <p><strong>Credibility Score:</strong> {result.credibilityScore} / 100</p>
             <p><strong>Message:</strong> {result.message}</p>
+
+            {/* Satisfaction question */}
+            <div className="mt-4">
+              <p className="text-lg">Are you satisfied with the results?</p>
+              <div className="flex justify-center space-x-4 mt-2">
+                <button onClick={() => handleSatisfaction('yes')} className="bg-green-500 text-white px-4 py-2 rounded">Yes</button>
+                <button onClick={() => handleSatisfaction('no')} className="bg-red-500 text-white px-4 py-2 rounded">No</button>
+              </div>
+            </div>
+
+            {satisfaction && (
+              <p className="mt-4 text-center">
+                Thank you for your feedback! You responded: <strong>{satisfaction}</strong>.
+                <br />
+                Current counts: Yes: {counts.yes}, No: {counts.no}
+              </p>
+            )}
           </div>
         )}
       </div>
