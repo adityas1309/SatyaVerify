@@ -3,6 +3,11 @@
 
 SatyaVerify is a news credibility verification tool built using **React.js** for the frontend, **Node.js/Express** for the backend, **MongoDB Atlas** for database storage, and the **News API** for retrieving related articles. It allows users to check the trustworthiness of news articles by verifying them against credible sources and calculating a credibility score.
 
+## Working video
+
+https://github.com/user-attachments/assets/3138ba97-22ea-424d-9008-a681966d1bf5
+
+
 ## Folder Structure
 
 ```
