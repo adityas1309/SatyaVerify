@@ -153,3 +153,6 @@ Make sure to set up the environment variables (MongoDB URI, News API key) on Ver
 
 - Project Maintainer: Aditya Singh
 - GitHub: [adityas1309](https://github.com/adityas1309)
+
+- Project Maintainer: Anusha Burnwal
+- GitHub: [Anushaburnwal](https://github.com/Anushaburnwal)
