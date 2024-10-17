@@ -28,7 +28,7 @@ const LandingPage = () => {
             onClick={handleGetStarted}
             className="px-10 py-4 w-2/4 text-lg font-semibold border-4 border-[#6f77ff] rounded-xl hover:bg-gradient-to-r from-blue-500 to-purple-500 hover:text-white text-white transition duration-300 hover:shadow-lg transform hover:scale-105"
           >
-            Lets Check the NEWS!!!
+            Check the NEWS!!!
           </button>
         </div>
 
