@@ -1,16 +1,33 @@
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import Home from './pages/home';
-import Results from './pages/results';
+import React from "react";
+import {
+  BrowserRouter as Router,
+  Route,
+  Routes,
+  Navigate,
+} from "react-router-dom";
+import LandingPage from "./components/LandingPage";
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
+import Home from "./components/home";
 
-function App() {
+const App = () => {
   return (
     <Router>
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/results" element={<Results />} />
-      </Routes>
+      <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
+        {/* Routing for different pages */}
+        <Routes>
+
+          {/* Landing page with Spline and Get Started button */}
+          <Route path="/" element={<LandingPage />} />
+          
+          <Route path="/choose" element={<Home />} />
+
+          {/* Redirect any unmatched routes to the homepage */}
+          <Route path="*" element={<Navigate to="/" />} />
+        </Routes>
+      </div>
     </Router>
   );
-}
+};
 
 export default App;
